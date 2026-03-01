@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CARGO | FACHOSOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Oswald',sans-serif}
+body{background:#000;color:#fff;padding:80px 30px;overflow-x:hidden}
+
+/* LED fondo */
+.graffiti-line{position:fixed;width:160vw;height:2px;top:var(--t);left:-60vw;background:var(--c);transform:rotate(var(--r));animation:mover var(--s) linear infinite;z-index:0;pointer-events:none;}
+@keyframes mover{to{transform:translateX(120vw) rotate(var(--r));}}
+
+/* TITULO */
+h2{text-align:center;letter-spacing:6px;margin-bottom:50px;font-size:34px;background:linear-gradient(90deg,#fff,#f5e6ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* GRID */
+.grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:35px;max-width:1100px;margin:auto;}
+
+/* CARD */
+.card{position:relative;background:rgba(255,255,255,.04);backdrop-filter:blur(12px);border-radius:22px;padding:22px;border:1px solid rgba(255,255,255,.12);box-shadow:0 0 18px rgba(255,230,240,.15),inset 0 0 12px rgba(255,255,255,.08);overflow:hidden;}
+
+/* IMG */
+.img{height:300px;display:flex;justify-content:center;align-items:center;cursor:pointer;margin-bottom:12px;}
+.img img{max-width:100%;max-height:100%;border-radius:18px;background:#000;box-shadow:0 0 10px rgba(255,255,255,.18),0 0 20px rgba(255,230,240,.15);transition:.3s;}
+.img img:hover{transform:scale(1.05);}
+
+/* TALLAS */
+.tallas-title{font-size:13px;opacity:.7;margin:6px 0;}
+.tallas{display:flex;flex-wrap:wrap;gap:8px;}
+.tallas span{border:1px solid rgba(255,255,255,.5);padding:4px 10px;border-radius:10px;font-size:12px;opacity:.6;cursor:pointer;transition:.3s;}
+.tallas span.led{animation:neonBlink 1s infinite alternate;color:#fff;}
+@keyframes neonBlink{0%{box-shadow:0 0 5px #fff,0 0 15px #fff,0 0 30px #fff,0 0 45px #fff;opacity:1;}100%{box-shadow:0 0 10px #fff,0 0 25px #fff,0 0 50px #fff,0 0 70px #fff;opacity:1;}}
+
+/* BOTON */
+.btn{margin-top:12px;padding:10px;border-radius:14px;border:1px solid rgba(255,255,255,.75);background:transparent;color:rgba(255,255,255,.75);cursor:pointer;width:100%;}
+.btn:hover{background:rgba(255,255,255,.75);color:#000;}
+
+/* CARRITO */
+#carrito{position:fixed;top:25px;right:25px;z-index:3000;background:rgba(255,255,255,.06);padding:10px 18px;border-radius:22px;cursor:pointer;box-shadow:0 0 20px rgba(255,230,240,.35);}
+#contador{font-weight:bold;margin-left:6px;}
+#carritoLista{display:none;position:fixed;top:80px;right:25px;width:340px;max-height:80vh;overflow:auto;background:rgba(0,0,0,.95);padding:18px;border-radius:22px;border:1px solid rgba(255,255,255,.35);box-shadow:0 0 30px rgba(255,230,240,.35);z-index:3001;}
+
+/* ITEMS */
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(255,255,255,.06);padding:12px;border-radius:12px;margin-bottom:12px;}
+.item img{width:80px;height:80px;object-fit:contain;border-radius:12px;}
+.btn-eliminar{border:1px solid rgba(255,230,240,.75);background:none;color:#fff;padding:6px 12px;border-radius:10px;cursor:pointer;}
+.btn-eliminar:hover{background:rgba(255,230,240,.75);color:#000;}
+.total{margin-top:12px;font-weight:bold}
+
+/* CONFETI */
+.confeti{position:fixed;width:8px;height:8px;background:linear-gradient(45deg,#fff,#f5e6ee);top:-10px;animation:caer 1.4s linear forwards;z-index:5000;border-radius:50%;pointer-events:none;}
+@keyframes caer{to{transform:translateY(100vh) rotate(360deg);opacity:0}}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);justify-content:center;align-items:center;z-index:4000;}
+.modal img{max-width:90%;max-height:90%;border-radius:22px;box-shadow:0 0 40px rgba(255,230,240,.35);}
+.modal span{position:absolute;top:25px;right:30px;font-size:32px;cursor:pointer;}
+</style>
+</head>
+
+<body>
+
+<div class="graffiti-line" style="--r:18deg;--s:20s;--c:rgba(255,255,255,.25);--t:22%"></div>
+<div class="graffiti-line" style="--r:-32deg;--s:26s;--c:rgba(255,230,240,.28);--t:55%"></div>
+
+<h2>CARGO</h2>
+<div class="grid" id="productosGrid"></div>
+
+<div id="carrito">🛒 <span id="contador">0</span></div>
+<div id="carritoLista"></div>
+
+<div class="modal" id="modalImg">
+ <span onclick="cerrarModal()">✕</span>
+ <img id="imgGrande">
+</div>
+
+<script>
+const productos=[
+ {nombre:"Cargo Azul",precio:289,imagen:"Cargo azul.jpg",tallas:["3","5","7","9","11"]},
+ {nombre:"Cargo Negro",precio:289,imagen:"Cargo negro.jpg",tallas:["3","5","7","9","11","13","15"]},
+ {nombre:"Cargo Vestir",precio:289,imagen:"Cargo vestir.jpg",tallas:["5","7","9","11","13"]}
+];
+
+const grid=document.getElementById("productosGrid");
+const carritoBtn=document.getElementById("carrito");
+const carritoLista=document.getElementById("carritoLista");
+const contador=document.getElementById("contador");
+const modalImg=document.getElementById("modalImg");
+const imgGrande=document.getElementById("imgGrande");
+
+let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
+let tallasSeleccionadas={};
+
+// Crear productos
+productos.forEach((p,index)=>{
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`
+  <div class="img" onclick="verImagen('${p.imagen}')">
+   <img src="${p.imagen}">
+  </div>
+  <p>${p.nombre}</p>
+  <span>$${p.precio} MXN</span>
+  <div class="tallas-title">Tallas disponibles</div>
+  <div class="tallas" data-product="${index}">
+   ${p.tallas.map(t=>`<span onclick="seleccionarTalla(this)">${t}</span>`).join("")}
+  </div>
+  <button class="btn" onclick="agregarCarrito(${index})">Agregar al carrito</button>`;
+ grid.appendChild(d);
+});
+
+// Seleccionar / deseleccionar talla
+function seleccionarTalla(el){
+ const contenedor = el.parentElement;
+ const prodIndex = contenedor.dataset.product;
+ if(el.classList.contains("led")){
+   el.classList.remove("led");
+   delete tallasSeleccionadas[prodIndex];
+ } else {
+   contenedor.querySelectorAll("span").forEach(t => t.classList.remove("led"));
+   el.classList.add("led");
+   tallasSeleccionadas[prodIndex] = el.textContent;
+ }
+}
+
+// Agregar al carrito
+function agregarCarrito(index){
+ const producto = productos[index];
+ const talla = tallasSeleccionadas[index];
+ if(!talla){ alert("Selecciona una talla antes de agregar"); return; }
+ carrito.push({nombre:producto.nombre,precio:producto.precio,imagen:producto.imagen,talla:talla});
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ actualizarContador();
+ lanzarConfeti();
+ mostrarCarrito();
+ delete tallasSeleccionadas[index];
+ document.querySelectorAll(`.tallas[data-product="${index}"] span.led`).forEach(t => t.classList.remove("led"));
+}
+
+// Contador y carrito
+function actualizarContador(){ contador.textContent=carrito.length; }
+
+carritoBtn.onclick=()=>{
+ carritoLista.style.display = carritoLista.style.display==="block"?"none":"block";
+ mostrarCarrito();
+};
+
+// Mostrar carrito
+function mostrarCarrito(){
+ carritoLista.innerHTML="";
+ let total=0;
+ carrito.forEach((p,i)=>{
+  total+=p.precio;
+  carritoLista.innerHTML+=`
+   <div class="item">
+    <img src="${p.imagen}">
+    <span>${p.nombre} (Talla ${p.talla}) $${p.precio}</span>
+    <button class="btn-eliminar" onclick="eliminar(${i})">X</button>
+   </div>`;
+ });
+ carritoLista.innerHTML+=`<div class="total">Total: $${total} MXN</div>`;
+}
+
+// Eliminar del carrito
+function eliminar(i){
+ carrito.splice(i,1);
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ mostrarCarrito();
+ actualizarContador();
+}
+
+// Confeti
+function lanzarConfeti(){
+ for(let i=0;i<20;i++){
+  const c=document.createElement("div");
+  c.className="confeti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.animationDuration=(Math.random()+1)+"s";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),1500);
+ }
+}
+
+// Modal imagen
+function verImagen(src){ imgGrande.src=src; modalImg.style.display="flex"; }
+function cerrarModal(){ modalImg.style.display="none"; }
+
+// Inicializar contador
+actualizarContador();
+</script>
+
+</body>
+</html>

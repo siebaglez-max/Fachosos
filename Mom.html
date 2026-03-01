@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MOM | FACHOSOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Oswald',sans-serif}
+
+:root{
+ --neo-white:rgba(255,255,255,.75);
+ --neo-soft:rgba(255,255,255,.18);
+ --neo-glow:rgba(255,230,240,.35);
+ --glass:rgba(255,255,255,.04);
+}
+
+body{
+ background:#000;
+ color:#fff;
+ padding:80px 30px;
+ overflow-x:hidden;
+}
+
+/* LED */
+.graffiti-line{
+ position:fixed;
+ width:160vw;
+ height:2px;
+ top:var(--t);
+ left:-60vw;
+ background:var(--c);
+ transform:rotate(var(--r));
+ animation:mover var(--s) linear infinite;
+ z-index:0;
+}
+@keyframes mover{
+ to{transform:translateX(120vw) rotate(var(--r));}
+}
+
+/* TITULO */
+h2{
+ position:relative;
+ z-index:2;
+ text-align:center;
+ letter-spacing:6px;
+ margin-bottom:50px;
+ font-size:34px;
+ background:linear-gradient(90deg,#fff,#f5e6ee);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
+
+/* GRID */
+.grid{
+ position:relative;
+ z-index:2;
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:35px;
+ max-width:1100px;
+ margin:auto;
+}
+
+/* CARD */
+.card{
+ background:var(--glass);
+ backdrop-filter:blur(12px);
+ border-radius:22px;
+ padding:22px;
+ border:1px solid rgba(255,255,255,.12);
+ transition:.35s;
+ box-shadow:
+  0 0 18px var(--neo-soft),
+  0 0 40px var(--neo-glow),
+  inset 0 0 12px rgba(255,255,255,.08);
+}
+.card:hover{
+ transform:translateY(-8px) scale(1.02);
+ box-shadow:
+  0 0 28px var(--neo-glow),
+  inset 0 0 18px rgba(255,255,255,.15);
+}
+
+/* IMAGEN */
+.img{
+ height:300px;
+ margin-bottom:14px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ cursor:pointer;
+}
+.img img{
+ max-width:100%;
+ max-height:100%;
+ object-fit:contain;
+ border-radius:18px;
+ background:#000;
+ box-shadow:
+  0 0 10px var(--neo-soft),
+  0 0 20px var(--neo-glow);
+ transition:.35s;
+}
+.img img:hover{transform:scale(1.05);}
+
+/* TALLAS */
+.tallas-titulo{
+ margin-top:10px;
+ font-size:13px;
+ letter-spacing:2px;
+ color:rgba(255,255,255,.7);
+}
+.tallas{
+ display:flex;
+ gap:10px;
+ margin:10px 0 14px;
+ flex-wrap:wrap;
+}
+.talla{
+ padding:6px 12px;
+ border-radius:10px;
+ border:1px solid rgba(255,255,255,.4);
+ cursor:pointer;
+ transition:.3s;
+}
+.talla.activa{
+ border-color:#fff;
+ box-shadow:0 0 18px rgba(255,230,240,.9);
+}
+
+/* BOTON */
+.btn{
+ margin-top:8px;
+ padding:10px;
+ border-radius:14px;
+ border:1px solid var(--neo-white);
+ background:transparent;
+ color:var(--neo-white);
+ cursor:pointer;
+ width:100%;
+ letter-spacing:1px;
+ transition:.3s;
+}
+.btn:hover{
+ background:var(--neo-white);
+ color:#000;
+}
+
+/* CARRITO BOTON */
+#carrito{
+ position:fixed;
+ top:25px;
+ right:25px;
+ z-index:10;
+ background:rgba(255,255,255,.06);
+ padding:10px 18px;
+ border-radius:22px;
+ cursor:pointer;
+ box-shadow:0 0 20px rgba(255,230,240,.35);
+}
+#contador{font-weight:bold;margin-left:6px;}
+
+/* ✅ MENU CARRITO */
+#carritoLista{
+ display:none;
+ position:fixed;
+ top:70px;
+ right:25px;
+ width:340px;
+ max-height:80vh;
+ overflow:auto;
+ background:rgba(0,0,0,.95);
+ border-radius:22px;
+ padding:18px;
+ border:1px solid rgba(255,255,255,.35);
+ z-index:99999;
+}
+
+.item{
+ display:flex;
+ gap:10px;
+ align-items:center;
+ background:rgba(255,255,255,.06);
+ padding:12px;
+ border-radius:12px;
+ margin-bottom:12px;
+}
+.item img{
+ width:70px;
+ height:70px;
+ object-fit:contain;
+ border-radius:10px;
+}
+.btn-eliminar{
+ border:1px solid #fff;
+ background:none;
+ color:#fff;
+ padding:4px 10px;
+ border-radius:8px;
+ cursor:pointer;
+}
+
+/* CONFETI */
+.confeti{
+ position:fixed;
+ width:8px;
+ height:8px;
+ background:linear-gradient(45deg,#fff,#f5e6ee);
+ top:-10px;
+ animation:caer 1.4s linear forwards;
+ z-index:9999;
+ border-radius:50%;
+}
+@keyframes caer{
+ to{transform:translateY(100vh) rotate(360deg);opacity:0;}
+}
+
+/* MODAL */
+.modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.88);
+ justify-content:center;
+ align-items:center;
+ z-index:2000;
+}
+.modal img{
+ max-width:90%;
+ max-height:90%;
+ border-radius:22px;
+}
+.modal span{
+ position:absolute;
+ top:25px;
+ right:30px;
+ font-size:32px;
+ cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="graffiti-line" style="--r:18deg;--s:20s;--c:rgba(255,255,255,.25);--t:22%"></div>
+<div class="graffiti-line" style="--r:-32deg;--s:26s;--c:rgba(255,230,240,.28);--t:55%"></div>
+
+<h2>MOM</h2>
+
+<div class="grid" id="productosGrid"></div>
+
+<div id="carrito">🛒 <span id="contador">0</span></div>
+<div id="carritoLista"></div>
+
+<div class="modal" id="modalImg">
+ <span onclick="cerrarModal()">✕</span>
+ <img id="imgGrande">
+</div>
+
+<script>
+const productos=[
+ {nombre:"Mom",precio:249,imagen:"Mom.jpg",tallas:["3","5","7","9","11","13","15"]}
+];
+
+const grid=document.getElementById("productosGrid");
+const btnCarrito=document.getElementById("carrito");
+const carritoLista=document.getElementById("carritoLista");
+const contador=document.getElementById("contador");
+const modalImg=document.getElementById("modalImg");
+const imgGrande=document.getElementById("imgGrande");
+
+let carritoItems=JSON.parse(localStorage.getItem("carrito"))||[];
+let tallaSeleccionada = "";
+
+// Mostrar productos
+function mostrarProductos(){
+ grid.innerHTML="";
+ productos.forEach(p=>{
+  const d=document.createElement("div");
+  d.className="card";
+  d.innerHTML=`
+   <div class="img" onclick="verImagen('${p.imagen}')">
+    <img src="${p.imagen}">
+   </div>
+   <p>${p.nombre}</p>
+   <span>$${p.precio} MXN</span>
+   <div class="tallas-titulo">TALLAS</div>
+   <div class="tallas">
+    ${p.tallas.map(t=>`<div class="talla" onclick="activarTalla(this)">${t}</div>`).join("")}
+   </div>
+   <button class="btn" onclick="agregarCarrito('${p.nombre}',${p.precio},'${p.imagen}')">
+    Agregar al carrito
+   </button>`;
+  grid.appendChild(d);
+ });
+}
+
+// Función para seleccionar/deseleccionar talla
+function activarTalla(el){
+ const contenedor = el.parentElement;
+ if(el.classList.contains("activa")){
+   el.classList.remove("activa");
+   tallaSeleccionada = "";
+ } else {
+   contenedor.querySelectorAll(".talla").forEach(t => t.classList.remove("activa"));
+   el.classList.add("activa");
+   tallaSeleccionada = el.textContent;
+ }
+}
+
+// Agregar al carrito con talla
+function agregarCarrito(n,p,i){
+ if(!tallaSeleccionada){
+   alert("Por favor selecciona una talla antes de agregar al carrito.");
+   return;
+ }
+ carritoItems.push({nombre:n,precio:p,imagen:i,talla:tallaSeleccionada});
+ localStorage.setItem("carrito",JSON.stringify(carritoItems));
+ actualizarContador();
+ lanzarConfeti();
+ mostrarCarrito();
+ tallaSeleccionada = "";
+ document.querySelectorAll(".talla.activa").forEach(t => t.classList.remove("activa"));
+}
+
+// Contador y carrito
+function actualizarContador(){
+ contador.textContent=carritoItems.length;
+}
+
+btnCarrito.onclick=()=>{
+ carritoLista.style.display=
+  carritoLista.style.display==="block"?"none":"block";
+ mostrarCarrito();
+};
+
+function mostrarCarrito(){
+ carritoLista.innerHTML="";
+ let total=0;
+ carritoItems.forEach((p,i)=>{
+  total+=p.precio;
+  carritoLista.innerHTML+=`
+   <div class="item">
+    <img src="${p.imagen}">
+    <span>${p.nombre} ${p.talla ? '(Talla '+p.talla+')' : ''} $${p.precio}</span>
+    <button class="btn-eliminar" onclick="eliminar(${i})">X</button>
+   </div>`;
+ });
+ carritoLista.innerHTML+=`<div>Total: $${total} MXN</div>`;
+}
+
+function eliminar(i){
+ carritoItems.splice(i,1);
+ localStorage.setItem("carrito",JSON.stringify(carritoItems));
+ mostrarCarrito();
+ actualizarContador();
+}
+
+// Confeti
+function lanzarConfeti(){
+ for(let i=0;i<22;i++){
+  const c=document.createElement("div");
+  c.className="confeti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.animationDuration=(Math.random()+1)+"s";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),1500);
+ }
+}
+
+// Modal de imagen
+function verImagen(src){
+ imgGrande.src=src;
+ modalImg.style.display="flex";
+}
+function cerrarModal(){
+ modalImg.style.display="none";
+}
+
+mostrarProductos();
+actualizarContador();
+</script>
+
+</body>
+</html>

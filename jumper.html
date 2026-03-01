@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>JUMPER | FACHOSOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Oswald',sans-serif}
+
+:root{
+ --neo-white:rgba(255,255,255,.75);
+ --neo-soft:rgba(255,255,255,.18);
+ --neo-glow:rgba(255,255,255,1);
+ --glass:rgba(255,255,255,.04);
+}
+
+body{
+ background:#000;
+ color:#fff;
+ padding:80px 30px;
+ overflow-x:hidden;
+}
+
+/* LED FONDO */
+.graffiti-line{
+ position:fixed;
+ width:160vw;
+ height:2px;
+ top:var(--t);
+ left:-60vw;
+ background:var(--c);
+ transform:rotate(var(--r));
+ animation:mover var(--s) linear infinite;
+ z-index:0;
+}
+@keyframes mover{
+ to{transform:translateX(120vw) rotate(var(--r));}
+}
+
+/* TITULO */
+h2{
+ text-align:center;
+ letter-spacing:6px;
+ margin-bottom:50px;
+ font-size:34px;
+ background:linear-gradient(90deg,#ffffff,#f5e6ee);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+}
+
+/* GRID */
+.grid{
+ position:relative;
+ z-index:2;
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:35px;
+ max-width:1100px;
+ margin:auto;
+}
+
+/* CARD */
+.card{
+ background:var(--glass);
+ backdrop-filter:blur(12px);
+ border-radius:22px;
+ padding:22px;
+ border:1px solid rgba(255,255,255,.12);
+ box-shadow:
+  0 0 18px rgba(255,230,240,.15),
+  inset 0 0 12px rgba(255,255,255,.08);
+}
+
+/* IMG */
+.img{
+ height:300px;
+ margin-bottom:12px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ cursor:pointer;
+}
+.img img{
+ max-width:100%;
+ max-height:100%;
+ object-fit:contain;
+ border-radius:18px;
+ background:#000;
+ box-shadow:
+  0 0 10px var(--neo-soft),
+  0 0 20px var(--neo-glow);
+ transition:.3s;
+}
+.img img:hover{transform:scale(1.05)}
+
+/* TALLAS */
+.tallas-title{
+ font-size:13px;
+ opacity:.7;
+ margin:6px 0;
+}
+.tallas{
+ display:flex;
+ gap:8px;
+ flex-wrap:wrap;
+}
+.tallas span{
+ border:1px solid rgba(255,255,255,.5);
+ padding:4px 10px;
+ border-radius:10px;
+ font-size:12px;
+ opacity:.6;
+ cursor:pointer;
+ transition:0.2s;
+}
+.tallas span.activa{
+ border-color:#fff;
+ box-shadow:0 0 12px #fff,0 0 24px #fff,0 0 36px #fff;
+ opacity:1;
+}
+
+/* BOTON */
+.btn{
+ margin-top:12px;
+ padding:10px;
+ border-radius:14px;
+ border:1px solid var(--neo-white);
+ background:transparent;
+ color:var(--neo-white);
+ cursor:pointer;
+ width:100%;
+}
+.btn:hover{
+ background:var(--neo-white);
+ color:#000;
+}
+
+/* CARRITO */
+#btnCarrito{
+ position:fixed;
+ top:25px;
+ right:25px;
+ z-index:6000;
+ background:rgba(255,255,255,.06);
+ padding:10px 18px;
+ border-radius:22px;
+ cursor:pointer;
+ box-shadow:0 0 20px rgba(255,230,240,.35);
+}
+#contador{font-weight:bold;margin-left:6px}
+
+#carritoLista{
+ display:none;
+ position:fixed;
+ top:70px;
+ right:25px;
+ width:340px;
+ max-height:80vh;
+ overflow:auto;
+ background:rgba(0,0,0,.95);
+ padding:18px;
+ border-radius:22px;
+ border:1px solid rgba(255,255,255,.35);
+ box-shadow:0 0 30px rgba(255,230,240,.35);
+ z-index:6000;
+}
+
+.item{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:rgba(255,255,255,.06);
+ padding:12px;
+ border-radius:12px;
+ margin-bottom:12px;
+}
+.item img{
+ width:80px;
+ height:80px;
+ object-fit:contain;
+ border-radius:12px;
+}
+
+/* BOTON ELIMINAR */
+.btn-eliminar{
+ border:1px solid rgba(255,230,240,.75);
+ background:none;
+ color:#fff;
+ padding:6px 12px;
+ border-radius:10px;
+ cursor:pointer;
+}
+.btn-eliminar:hover{
+ background:rgba(255,230,240,.75);
+ color:#000;
+}
+
+.total{margin-top:12px;font-weight:bold}
+
+/* CONFETI */
+.confeti{
+ position:fixed;
+ width:8px;
+ height:8px;
+ background:linear-gradient(45deg,#fff,#f5e6ee);
+ top:-10px;
+ animation:caer 1.4s linear forwards;
+ z-index:9999;
+ border-radius:50%;
+}
+@keyframes caer{
+ to{transform:translateY(100vh) rotate(360deg);opacity:0}
+}
+
+/* MODAL */
+.modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.88);
+ justify-content:center;
+ align-items:center;
+ z-index:9000;
+}
+.modal img{
+ max-width:90%;
+ max-height:90%;
+ border-radius:22px;
+ box-shadow:0 0 40px var(--neo-glow);
+}
+.modal span{
+ position:absolute;
+ top:25px;
+ right:30px;
+ font-size:32px;
+ cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="graffiti-line" style="--r:18deg;--s:20s;--c:rgba(255,255,255,.25);--t:22%"></div>
+<div class="graffiti-line" style="--r:-32deg;--s:26s;--c:rgba(255,255,255,.28);--t:55%"></div>
+
+<h2>JUMPER</h2>
+<div class="grid" id="productosGrid"></div>
+
+<div id="btnCarrito">🛒 <span id="contador">0</span></div>
+<div id="carritoLista"></div>
+
+<div class="modal" id="modalImg">
+ <span onclick="cerrarModal()">✕</span>
+ <img id="imgGrande">
+</div>
+
+<script>
+const KEY="carrito";
+
+const productos=[
+ {nombre:"Jumper",precio:560,imagen:"Jumper.jpg",tallas:["S","M","L","XL"]}
+];
+
+const grid=document.getElementById("productosGrid");
+const btnCarrito=document.getElementById("btnCarrito");
+const carritoLista=document.getElementById("carritoLista");
+const contador=document.getElementById("contador");
+
+let carrito=JSON.parse(localStorage.getItem(KEY))||[];
+let tallaSeleccionada = "";
+
+// Mostrar productos
+productos.forEach(p=>{
+ grid.innerHTML+=`
+ <div class="card">
+  <div class="img" onclick="verImagen('${p.imagen}')">
+   <img src="${p.imagen}">
+  </div>
+  <p>${p.nombre}</p>
+  <span>$${p.precio} MXN</span>
+  <div class="tallas-title">Tallas disponibles</div>
+  <div class="tallas">
+   ${p.tallas.map(t=>`<span onclick="seleccionarTalla(this)">${t}</span>`).join("")}
+  </div>
+  <button class="btn" onclick="agregar('${p.nombre}',${p.precio},'${p.imagen}')">
+   Agregar al carrito
+  </button>
+ </div>`;
+});
+
+// Selección de talla
+function seleccionarTalla(el){
+ const contenedor = el.parentElement;
+ if(el.classList.contains("activa")){
+     el.classList.remove("activa");
+     tallaSeleccionada = "";
+ } else {
+     contenedor.querySelectorAll("span").forEach(t => t.classList.remove("activa"));
+     el.classList.add("activa");
+     tallaSeleccionada = el.textContent;
+ }
+}
+
+// Agregar al carrito con talla
+function agregar(n,p,i){
+ if(!tallaSeleccionada){
+   alert("Selecciona una talla antes de agregar al carrito");
+   return;
+ }
+ carrito.push({nombre:n,precio:p,imagen:i,talla:tallaSeleccionada});
+ localStorage.setItem(KEY,JSON.stringify(carrito));
+ actualizar();
+ confeti();
+ renderCarrito();
+ tallaSeleccionada = "";
+ document.querySelectorAll(".tallas span.activa").forEach(t => t.classList.remove("activa"));
+}
+
+// Contador y carrito
+function actualizar(){
+ contador.textContent=carrito.length;
+}
+
+btnCarrito.onclick=()=>{
+ carritoLista.style.display=
+ carritoLista.style.display==="block"?"none":"block";
+ renderCarrito();
+}
+
+function renderCarrito(){
+ carritoLista.innerHTML="";
+ let total=0;
+ carrito.forEach((p,i)=>{
+  total+=p.precio;
+  carritoLista.innerHTML+=`
+   <div class="item">
+    <img src="${p.imagen}">
+    <span>${p.nombre} ${p.talla ? '(Talla '+p.talla+')' : ''} $${p.precio}</span>
+    <button class="btn-eliminar" onclick="eliminar(${i})">X</button>
+   </div>`;
+ });
+ carritoLista.innerHTML+=`<div class="total">Total: $${total} MXN</div>`;
+}
+
+function eliminar(i){
+ carrito.splice(i,1);
+ localStorage.setItem(KEY,JSON.stringify(carrito));
+ renderCarrito();
+ actualizar();
+}
+
+// Confeti
+function confeti(){
+ for(let i=0;i<22;i++){
+  const c=document.createElement("div");
+  c.className="confeti";
+  c.style.left=Math.random()*100+"vw";
+  c.style.animationDuration=(Math.random()+1)+"s";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),1500);
+ }
+}
+
+// Modal
+function verImagen(src){
+ imgGrande.src=src;
+ modalImg.style.display="flex";
+}
+function cerrarModal(){
+ modalImg.style.display="none";
+}
+
+actualizar();
+</script>
+
+</body>
+</html>

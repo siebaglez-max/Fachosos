@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carrito | FACHOSOS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Oswald',sans-serif}
+body{background:#000;color:#fff;padding:40px;text-align:center}
+h2{color:#d4af37;letter-spacing:4px;margin-bottom:20px}
+
+.item{
+  border:1px solid #333;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.item img{
+  width:160px;
+  height:200px;
+  object-fit:cover;
+  border:2px solid #d4af37;
+  margin-bottom:10px;
+}
+
+.botones{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-top:10px;
+}
+
+.btn{
+  border:1px solid #fff;
+  background:none;
+  color:#fff;
+  padding:8px 16px;
+  cursor:pointer;
+  transition:.3s;
+}
+.btn:hover{background:#fff;color:#000}
+
+.eliminar{
+  border-color:red;
+  color:red;
+}
+.eliminar:hover{
+  background:red;
+  color:#fff;
+}
+
+.total{
+  margin-top:30px;
+  font-size:20px;
+  color:#d4af37;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🛒 TU CARRITO</h2>
+
+<div id="lista"></div>
+
+<div class="total">
+  Total: $<span id="total">0</span> MXN
+</div>
+
+<script>
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let lista = document.getElementById("lista");
+let totalEl = document.getElementById("total");
+
+function mostrarCarrito(){
+  if(carrito.length === 0){
+    lista.innerHTML = "<p style='opacity:.6'>😔 No tienes productos en el carrito</p>";
+    totalEl.innerText = 0;
+    return;
+  }
+
+  let total = 0;
+
+  lista.innerHTML = carrito.map((p, i) => {
+    total += Number(p.precio); // suma automática
+    return `
+      <div class="item">
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <p>${p.nombre}</p>
+        <span>$${p.precio} MXN</span>
+
+        <div class="botones">
+          <button class="btn" onclick="comprar('${p.nombre}')">
+            Comprar
+          </button>
+          <button class="btn eliminar" onclick="eliminar(${i})">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  totalEl.innerText = total;
+}
+
+function eliminar(index){
+  carrito.splice(index, 1);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  mostrarCarrito();
+}
+
+function comprar(nombre){
+  alert("Compra iniciada para: " + nombre);
+  // aquí puedes luego conectar un pago real
+}
+
+mostrarCarrito();
+</script>
+
+</body>
+</html>

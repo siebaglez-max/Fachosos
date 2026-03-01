@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pantalones Mujer | FACHOSOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Oswald',sans-serif}
+body{background:#000;color:#fff;padding:30px}
+h2{text-align:center;color:#c0c0c0;letter-spacing:4px;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:25px;max-width:1100px;margin:auto}
+.card{border:1px solid #333;padding:20px;transition:.3s}
+.card:hover{transform:scale(1.05);border-color:#c0c0c0}
+.img{height:260px;margin-bottom:15px}
+.img img{width:100%;height:100%;object-fit:cover;border:2px solid #c0c0c0;border-radius:12px}
+.btn{margin-top:8px;padding:8px 14px;border:1px solid #fff;background:none;color:#fff;cursor:pointer;width:100%}
+.btn:hover{background:#fff;color:#000}
+#carrito{position:fixed;top:20px;right:20px;background:#c0c0c0;color:#000;padding:10px 15px;border-radius:8px;cursor:pointer;z-index:1000}
+#carritoLista{display:none;position:fixed;top:60px;right:20px;width:380px;max-height:80vh;overflow:auto;background:#111;border:2px solid #c0c0c0;padding:15px;border-radius:10px}
+.item{display:flex;justify-content:space-between;border-bottom:1px solid #333;padding:5px 0}
+.total{margin-top:10px;font-weight:bold}
+.compra{margin-top:10px;padding:8px;border:none;background:#c0c0c0;color:#000;width:100%;cursor:pointer}
+.reseñas{max-width:800px;margin:60px auto}
+.rating-resumen{display:flex;gap:30px;align-items:center}
+.promedio{min-width:160px}
+.promedio .stars{color:gold;font-size:22px}
+.barras{flex:1}
+.barra{display:flex;align-items:center;margin:6px 0;font-size:14px}
+.barra span{width:35px}
+.linea{background:#333;height:10px;flex:1;margin:0 10px;border-radius:5px}
+.relleno{background:#f0c14b;height:100%;border-radius:5px}
+.comentario{border-bottom:1px solid #333;padding:10px 0}
+.admin{margin-top:40px;border:2px solid #c0c0c0;padding:15px;border-radius:10px;background:#111}
+.admin input,.admin textarea{width:100%;margin-bottom:8px;padding:6px;background:#000;color:#fff;border:1px solid #555;border-radius:5px}
+.admin button{padding:8px 14px;background:#c0c0c0;border:none;cursor:pointer;margin-right:5px}
+</style>
+</head>
+<body>
+<!-- Botón Regresar dentro del producto -->
+<a href="productos.html" class="btn-regresar-card">← Regresar</a>
+<h2>PANTALONES MUJER</h2>
+<div class="grid" id="productosGrid"></div>
+
+<div id="carrito">🛒 Carrito (<span id="contador">0</span>)</div>
+<div id="carritoLista"></div>
+
+<div class="reseñas">
+<h3>Opiniones de clientes</h3>
+<div class="rating-resumen">
+  <div class="promedio">
+    <div id="avgStars">0.0</div>
+    <div class="stars" id="avgVisual"></div>
+    <p><span id="totalReviews">0</span> calificaciones</p>
+  </div>
+  <div class="barras" id="barras"></div>
+</div>
+<hr style="margin:20px 0">
+<div id="listaComentarios"></div>
+</div>
+
+<div class="admin">
+<h3>Modo Administrador</h3>
+<input id="r5" type="number" placeholder="5 estrellas">
+<input id="r4" type="number" placeholder="4 estrellas">
+<input id="r3" type="number" placeholder="3 estrellas">
+<input id="r2" type="number" placeholder="2 estrellas">
+<input id="r1" type="number" placeholder="1 estrella">
+<button onclick="guardarRatings()">Guardar calificaciones</button>
+<hr style="margin:15px 0">
+<input id="comentNombre" placeholder="Nombre">
+<textarea id="comentTexto" placeholder="Comentario"></textarea>
+<button onclick="agregarComentario()">Agregar comentario</button>
+<button onclick="resetComentarios()">Borrar comentarios</button>
+</div>
+
+<script>
+// PRODUCTOS MUJER
+const productos=[
+ {nombre:"Jeans Holgados Azul",precio:549,imagen:"jeansHolgados_azul.jpg"},
+ {nombre:"Jeans Holgados Negro",precio:549,imagen:"jeansHolgados_negro.jpg"},
+ {nombre:"Jeans Holgados Gris",precio:549,imagen:"jeansHolgados_gris.jpg"},
+ {nombre:"Cargo A Negro",precio:499,imagen:"cargoA_negro.jpg"},
+ {nombre:"Cargo A Azul",precio:499,imagen:"cargoA_azul.jpg"},
+ {nombre:"Cargo A Gris",precio:499,imagen:"cargoA_gris.jpg"},
+ {nombre:"Cargo B Negro",precio:499,imagen:"cargoB_negro.jpg"},
+ {nombre:"Cargo B Azul",precio:499,imagen:"cargoB_azul.jpg"},
+ {nombre:"Cargo B Blanco",precio:499,imagen:"cargoB_blanco.jpg"}
+];
+
+const grid=document.getElementById("productosGrid");
+let carrito=JSON.parse(localStorage.getItem("carrito"))||[];
+
+productos.forEach(p=>{
+ const d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`
+ <div class="img"><img src="${p.imagen}"></div>
+ <p>${p.nombre}</p>
+ <span>$${p.precio} MXN</span>
+ <button class="btn" onclick="agregarCarrito('${p.nombre}',${p.precio},'${p.imagen}')">Agregar al carrito</button>
+ <button class="btn" onclick="comprarAhora('${p.nombre}',${p.precio})">Comprar ahora</button>
+ `;
+ grid.appendChild(d);
+});
+
+function agregarCarrito(n,p,i){
+ carrito.push({nombre:n,precio:p,imagen:i});
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ actualizarContador();
+}
+
+function comprarAhora(n,p){
+ alert(`Compraste ${n} por $${p} MXN`);
+}
+
+function actualizarContador(){
+ contador.textContent=carrito.length;
+}
+
+carrito.onclick=()=>{
+ carritoLista.style.display=carritoLista.style.display==="block"?"none":"block";
+ mostrarCarrito();
+}
+
+function mostrarCarrito(){
+ carritoLista.innerHTML="";
+ let t=0;
+ carrito.forEach((p,i)=>{
+  t+=p.precio;
+  carritoLista.innerHTML+=`
+  <div class="item">
+   <span>${p.nombre} $${p.precio}</span>
+   <button onclick="eliminar(${i})">❌</button>
+  </div>`;
+ });
+ carritoLista.innerHTML+=`<div class="total">Total: $${t} MXN</div><button class="compra" onclick="comprarTodo()">Comprar todo</button>`;
+}
+
+function eliminar(i){
+ carrito.splice(i,1);
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ mostrarCarrito();actualizarContador();
+}
+
+function comprarTodo(){
+ if(carrito.length===0)return;
+ alert("Compra realizada");
+ carrito=[];
+ localStorage.setItem("carrito",JSON.stringify(carrito));
+ mostrarCarrito();actualizarContador();
+}
+
+actualizarContador();
+
+// ===== RESEÑAS =====
+let ratings=JSON.parse(localStorage.getItem("ratingsMujer"))||{5:0,4:0,3:0,2:0,1:0};
+let comentarios=JSON.parse(localStorage.getItem("comentMujer"))||[];
+
+function renderRatings(){
+ const total=Object.values(ratings).reduce((a,b)=>a+b,0);
+ const avg=total?((5*ratings[5]+4*ratings[4]+3*ratings[3]+2*ratings[2]+ratings[1])/total).toFixed(1):"0.0";
+ avgStars.textContent=avg;
+ totalReviews.textContent=total;
+ avgVisual.textContent="★★★★★☆☆☆☆☆".slice(5-Math.round(avg),10-Math.round(avg));
+ barras.innerHTML="";
+ for(let i=5;i>=1;i--){
+  const pct=total?(ratings[i]/total)*100:0;
+  barras.innerHTML+=`<div class="barra"><span>${i}★</span><div class="linea"><div class="relleno" style="width:${pct}%"></div></div><span>${ratings[i]}</span></div>`;
+ }
+}
+
+function guardarRatings(){
+ ratings={5:+r5.value||0,4:+r4.value||0,3:+r3.value||0,2:+r2.value||0,1:+r1.value||0};
+ localStorage.setItem("ratingsMujer",JSON.stringify(ratings));
+ renderRatings();
+}
+
+function renderComentarios(){
+ listaComentarios.innerHTML="";
+ comentarios.forEach(c=>{
+  listaComentarios.innerHTML+=`<div class="comentario"><strong>${c.nombre}</strong><p>${c.texto}</p></div>`;
+ });
+}
+
+function agregarComentario(){
+ comentarios.push({nombre:comentNombre.value,texto:comentTexto.value});
+ localStorage.setItem("comentMujer",JSON.stringify(comentarios));
+ renderComentarios();
+ comentNombre.value=comentTexto.value="";
+}
+
+function resetComentarios(){
+ comentarios=[];
+ localStorage.setItem("comentMujer","[]");
+ renderComentarios();
+}
+
+renderRatings();
+renderComentarios();
+</script>
+</body>
+</html>
